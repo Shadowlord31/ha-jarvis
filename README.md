@@ -40,7 +40,7 @@ Jarvis (NAS, Docker)  <-- WebSocket (outbound from HA) -->  Integration "jarvis"
 
 #### Meldung an bestimmte Personen
 
-`person` schickt die Meldung nur auf die Geräte dieser Personen (Geräte, bei denen in Jarvis der Standardsprecher gesetzt ist): ein Name (`Thomas`), mehrere Namen (`Thomas, Jenny` oder als YAML-Liste) oder eine Gruppe (`erwachsene`, `kinder`, `admins`, `familie`). Ohne `person` geht die Meldung wie bisher an das `ziel`. Ein unbekannter Name bricht die Aktion mit einer lesbaren Fehlermeldung ab, es wird nichts gesendet. Mit `response_variable` lässt sich prüfen, ob jemand erreicht wurde (setzt Jarvis ab dem Stand mit Meldung an Personen voraus):
+`ziel` ist `alle`, `handy`, `browser`, `display` oder der Name eines Geräts (Jarvis ab dem Stand „eine Ansicht“; ältere Werte `hub` und `flur` gelten weiter). `person` schickt die Meldung nur auf die Geräte dieser Personen (Geräte, bei denen in Jarvis der Standardsprecher gesetzt ist): ein Name (`Thomas`), mehrere Namen (`Thomas, Jenny` oder als YAML-Liste) oder eine Gruppe (`erwachsene`, `kinder`, `admins`, `familie`). Ohne `person` geht die Meldung wie bisher an das `ziel`. Ein unbekannter Name bricht die Aktion mit einer lesbaren Fehlermeldung ab, es wird nichts gesendet. Mit `response_variable` lässt sich prüfen, ob jemand erreicht wurde (setzt Jarvis ab dem Stand mit Meldung an Personen voraus):
 
 ```yaml
 - action: jarvis.meldung

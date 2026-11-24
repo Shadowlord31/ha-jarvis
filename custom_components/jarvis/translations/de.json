@@ -161,7 +161,7 @@
         },
         "ziel": {
           "name": "Ziel",
-          "description": "alle oder der Name einer Ansicht (z. B. hub, flur)."
+          "description": "alle, handy, browser, display oder der Name eines Geräts (z. B. handy)."
         },
         "person": {
           "name": "Person",
