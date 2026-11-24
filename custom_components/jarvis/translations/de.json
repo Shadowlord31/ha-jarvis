@@ -12,7 +12,7 @@
           "gateway_token": "Gateway-Token"
         },
         "data_description": {
-          "jarvis_url": "ws://<NAS-IP>:8340/ws/ha (wss:// ist erlaubt)",
+          "jarvis_url": "ws://NAS-IP:8340/ws/ha (wss:// ist erlaubt)",
           "jarvis_token": "Token aus ha_integration.token in der config.json von Jarvis",
           "gateway_url": "Adresse des Jarvis-Gateway-Add-ons",
           "gateway_token": "API-Token des Gateways"
@@ -119,7 +119,7 @@
         },
         "id": {
           "name": "Id",
-          "description": "Id des Timers."
+          "description": "Id des Timers. Sie steht in den Attributen des Sensors Nächster Timer (Entwicklerwerkzeuge, Zustände)."
         },
         "name": {
           "name": "Name",

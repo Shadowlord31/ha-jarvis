@@ -299,3 +299,34 @@ def test_kein_freier_service_aufruf():
     import pathlib
     for f in pathlib.Path("custom_components/jarvis").glob("*.py"):
         assert "async_call(" not in f.read_text(), f.name
+
+
+def _texte(knoten):
+    if isinstance(knoten, dict):
+        for v in knoten.values():
+            yield from _texte(v)
+    elif isinstance(knoten, list):
+        for v in knoten:
+            yield from _texte(v)
+    elif isinstance(knoten, str):
+        yield knoten
+
+
+@pytest.mark.parametrize("datei", ["strings.json", "translations/de.json", "translations/en.json"])
+def test_uebersetzungen_ohne_spitze_klammern(datei):
+    import json
+    import pathlib
+    pfad = pathlib.Path(__file__).parent.parent / "custom_components" / "jarvis" / datei
+    for text in _texte(json.loads(pfad.read_text(encoding="utf-8"))):
+        assert "<" not in text and ">" not in text, f"{datei}: {text}"
+
+
+async def test_timer_attribute_mit_id(hass, eintrag, fake_jarvis):
+    await fake_jarvis.senden({"typ": "timer", "liste": [
+        {"id": "a", "name": "Nudeln", "ende": "2030-01-01T12:10:00+00:00", "geraet": "pixel"},
+        {"id": "b", "name": "Ei", "ende": "2030-01-01T12:05:00+00:00", "geraet": ""}]})
+    await asyncio.sleep(0.1)
+    erwartet = [{"id": "b", "name": "Ei", "endet": "2030-01-01T12:05:00+00:00", "geraet": ""},
+                {"id": "a", "name": "Nudeln", "endet": "2030-01-01T12:10:00+00:00", "geraet": "pixel"}]
+    assert hass.states.get("sensor.jarvis_haupt_next_timer").attributes["timer"] == erwartet
+    assert sorted(hass.states.get("sensor.jarvis_haupt_active_timers").attributes["timer"], key=lambda t: t["id"]) == sorted(erwartet, key=lambda t: t["id"])

@@ -1,7 +1,7 @@
 """Konstanten der Jarvis-Integration."""
 
 DOMAIN = "jarvis"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 CONF_INSTANZ = "instanz"
 CONF_JARVIS_URL = "jarvis_url"

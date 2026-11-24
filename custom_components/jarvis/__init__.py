@@ -73,7 +73,7 @@ async def _timer_starten(call: ServiceCall) -> dict:
 async def _timer_stoppen(call: ServiceCall) -> dict:
     angaben = [bool(call.data.get("id")), bool(call.data.get("name")), bool(call.data.get("alle"))]
     if sum(angaben) != 1:
-        raise HomeAssistantError("Genau eins von id, name oder alle angeben")
+        raise HomeAssistantError("Bitte genau eine Angabe machen: Id, Name oder Alle (die Id steht in den Attributen des Sensors Nächster Timer).")
     felder = _felder(call, "name")
     if call.data.get("id"):
         felder["timer_id"] = call.data["id"]

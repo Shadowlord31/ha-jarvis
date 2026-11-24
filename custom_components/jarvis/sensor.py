@@ -19,6 +19,10 @@ def _ende(t: dict) -> datetime | None:
         return None
 
 
+def _liste(timer: list[dict]) -> list[dict]:
+    return [{"id": t.get("id"), "name": t.get("name"), "endet": t.get("ende"), "geraet": t.get("geraet")} for t in timer]
+
+
 class AktiveTimer(JarvisEntitaet, SensorEntity):
     _attr_icon = "mdi:timer-sand"
 
@@ -35,7 +39,7 @@ class AktiveTimer(JarvisEntitaet, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        return {"timer": [{k: t.get(k) for k in ("id", "name", "ende", "geraet")} for t in self.client.timer]}
+        return {"timer": _liste(self.client.timer)}
 
 
 class NaechsterTimer(JarvisEntitaet, SensorEntity):
@@ -52,3 +56,7 @@ class NaechsterTimer(JarvisEntitaet, SensorEntity):
     def native_value(self) -> datetime | None:
         enden = [e for e in map(_ende, self.client.timer) if e]
         return min(enden) if enden else None
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        return {"timer": _liste(sorted(self.client.timer, key=lambda t: _ende(t) or datetime.max.replace(tzinfo=dt_util.UTC)))}
