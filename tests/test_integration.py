@@ -153,6 +153,44 @@ async def test_meldung(hass, eintrag, fake_jarvis):
     assert (b["aktion"], b["nachricht"], b["titel"], b["dringend"], b["sprechen"], b["ziel"]) == ("meldung", "Wasch fertig", "Haus", True, False, "hub")
 
 
+async def test_meldung_person_wird_durchgereicht(hass, eintrag, fake_jarvis):
+    for eingabe, soll in (("Thomas", ["Thomas"]), ("Thomas, Jenny", ["Thomas", "Jenny"]), (["Thomas", " Jenny "], ["Thomas", "Jenny"]), ("erwachsene", ["erwachsene"])):
+        await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x", "person": eingabe}, blocking=True)
+        b = await fake_jarvis.naechste("befehl")
+        assert b["person"] == soll, (eingabe, b)
+    for leer in ("", "  ", []):
+        await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x", "person": leer}, blocking=True)
+        assert "person" not in await fake_jarvis.naechste("befehl")
+    await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x"}, blocking=True)
+    assert "person" not in await fake_jarvis.naechste("befehl")
+
+
+async def test_meldung_antwort_als_service_response(hass, eintrag, fake_jarvis):
+    fake_jarvis.befehl_antwort = lambda m: {"id": m["id"], "ok": True, "daten": {
+        "zugestellt": 1, "erreicht": 1, "personen": ["Thomas"], "nicht_erreicht": ["Jenny"]}}
+    r = await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x", "person": "Thomas, Jenny"}, blocking=True, return_response=True)
+    assert r == {"zugestellt": 1, "erreicht": 1, "personen": ["Thomas"], "nicht_erreicht": ["Jenny"]}
+    fake_jarvis.befehl_antwort = lambda m: {"id": m["id"], "ok": True, "daten": {
+        "zugestellt": 0, "erreicht": 0, "personen": [], "nicht_erreicht": ["Jenny"]}}
+    r = await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x", "person": "Jenny"}, blocking=True, return_response=True)
+    assert r["erreicht"] == 0 and r["nicht_erreicht"] == ["Jenny"]
+
+
+async def test_meldung_antwort_von_aelterem_jarvis(hass, eintrag, fake_jarvis):
+    fake_jarvis.befehl_antwort = lambda m: {"id": m["id"], "ok": True, "daten": {"zugestellt": 3}}
+    r = await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x"}, blocking=True, return_response=True)
+    assert r == {"zugestellt": 3, "erreicht": 3, "personen": [], "nicht_erreicht": []}
+
+
+async def test_meldung_unbekannte_person_lesbarer_fehler(hass, eintrag, fake_jarvis):
+    text = "Person oder Gruppe unbekannt: Oma. Erlaubt sind Thomas, Jenny und erwachsene, kinder, admins, familie."
+    fake_jarvis.befehl_antwort = lambda m: {"id": m["id"], "ok": False, "fehler": {"code": "unknown_person", "text": text}}
+    with pytest.raises(HomeAssistantError, match="Person oder Gruppe unbekannt: Oma"):
+        await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x", "person": "Oma"}, blocking=True, return_response=True)
+    with pytest.raises(HomeAssistantError, match="Erlaubt sind Thomas"):
+        await hass.services.async_call(DOMAIN, "meldung", {"nachricht": "x", "person": "Oma"}, blocking=True)
+
+
 async def test_aufgaben(hass, eintrag, fake_jarvis):
     await hass.services.async_call(DOMAIN, "aufgabe_anlegen", {"titel": "Müll", "liste": "Haus", "faellig_datum": "2030-02-03", "faellig_zeit": "18:30"}, blocking=True)
     b = await fake_jarvis.naechste("befehl")

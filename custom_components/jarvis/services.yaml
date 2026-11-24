@@ -69,6 +69,11 @@ meldung:
       example: hub
       selector:
         text:
+    person:
+      required: false
+      example: Thomas
+      selector:
+        text:
 aufgabe_anlegen:
   fields:
     instanz: *instanz

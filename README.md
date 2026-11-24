@@ -34,9 +34,28 @@ Jarvis (NAS, Docker)  <-- WebSocket (outbound from HA) -->  Integration "jarvis"
 |---|---|
 | `jarvis.timer_starten` | Timer starten (`dauer`, `name`, `ueberall`); Antwort `{id, ende}` |
 | `jarvis.timer_stoppen` | Timer stoppen (genau eins von `id`, `name`, `alle`) |
-| `jarvis.meldung` | Meldung anzeigen (`nachricht`, `titel`, `symbol`, `dringend`, `sprechen`, `ziel`) |
+| `jarvis.meldung` | Meldung anzeigen (`nachricht`, `titel`, `symbol`, `dringend`, `sprechen`, `ziel`, `person`); Antwort `{erreicht, personen, nicht_erreicht}` |
 | `jarvis.aufgabe_anlegen` | To-Do-Aufgabe anlegen |
 | `jarvis.aufgabe_erledigt` | To-Do-Aufgabe abhaken |
+
+#### Meldung an bestimmte Personen
+
+`person` schickt die Meldung nur auf die Geräte dieser Personen (Geräte, bei denen in Jarvis der Standardsprecher gesetzt ist): ein Name (`Thomas`), mehrere Namen (`Thomas, Jenny` oder als YAML-Liste) oder eine Gruppe (`erwachsene`, `kinder`, `admins`, `familie`). Ohne `person` geht die Meldung wie bisher an das `ziel`. Ein unbekannter Name bricht die Aktion mit einer lesbaren Fehlermeldung ab, es wird nichts gesendet. Mit `response_variable` lässt sich prüfen, ob jemand erreicht wurde (setzt Jarvis ab dem Stand mit Meldung an Personen voraus):
+
+```yaml
+- action: jarvis.meldung
+  data:
+    nachricht: Die Waschmaschine ist fertig.
+    person: Thomas
+  response_variable: antwort
+- if:
+    - condition: template
+      value_template: "{{ antwort.erreicht == 0 }}"
+  then:
+    - action: script.telegram_notify   # Rückfall
+```
+
+Antwort: `erreicht` (Zahl der Verbindungen), `personen` (erreichte Personen), `nicht_erreicht` (Personen ohne verbundenes Gerät).
 
 ### Entitäten (Gerät „Jarvis (<Instanz>)“)
 

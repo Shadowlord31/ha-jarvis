@@ -1,7 +1,7 @@
 {
   "domain": "jarvis",
   "name": "Jarvis",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "documentation": "https://github.com/Shadowlord31/ha-jarvis",
   "issue_tracker": "https://github.com/Shadowlord31/ha-jarvis/issues",
   "dependencies": [],

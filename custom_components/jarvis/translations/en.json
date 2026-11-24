@@ -162,6 +162,10 @@
         "ziel": {
           "name": "Target",
           "description": "all or the name of a view (e.g. hub, flur)."
+        },
+        "person": {
+          "name": "Person",
+          "description": "Only show the notice on the devices of these people: a name (e.g. Thomas), several names separated by commas or as a list, or a group (erwachsene, kinder, admins, familie). Empty means everywhere. The response says who was reached."
         }
       }
     },

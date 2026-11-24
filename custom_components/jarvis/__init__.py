@@ -42,7 +42,8 @@ SCHEMA_TIMER_STOPPEN = vol.Schema({**_INSTANZ, vol.Optional("id"): cv.string, vo
                                    vol.Optional("alle"): cv.boolean})
 SCHEMA_MELDUNG = vol.Schema({**_INSTANZ, vol.Required("nachricht"): cv.string, vol.Optional("titel"): cv.string,
                              vol.Optional("symbol"): cv.string, vol.Optional("dringend", default=False): cv.boolean,
-                             vol.Optional("sprechen", default=False): cv.boolean, vol.Optional("ziel", default="alle"): cv.string})
+                             vol.Optional("sprechen", default=False): cv.boolean, vol.Optional("ziel", default="alle"): cv.string,
+                             vol.Optional("person"): cv.ensure_list_csv})
 SCHEMA_AUFGABE_ANLEGEN = vol.Schema({**_INSTANZ, vol.Required("titel"): cv.string, vol.Optional("liste"): cv.string,
                                      vol.Optional("faellig_datum"): _DATUM, vol.Optional("faellig_zeit"): _ZEIT,
                                      vol.Optional("notiz"): cv.string})
@@ -84,8 +85,13 @@ async def _timer_stoppen(call: ServiceCall) -> dict:
 
 async def _meldung(call: ServiceCall) -> dict:
     felder = _felder(call, "nachricht", "titel", "symbol", "ziel")
-    return await _client(call.hass, call.data.get("instanz")).befehl(
+    personen = [str(p).strip() for p in call.data.get("person") or [] if str(p).strip()]
+    if personen:
+        felder["person"] = personen
+    d = await _client(call.hass, call.data.get("instanz")).befehl(
         "meldung", **felder, dringend=call.data["dringend"], sprechen=call.data["sprechen"])
+    erreicht = d.get("erreicht", d.get("zugestellt", 0))
+    return {"zugestellt": erreicht, "erreicht": erreicht, "personen": d.get("personen") or [], "nicht_erreicht": d.get("nicht_erreicht") or []}
 
 
 async def _aufgabe_anlegen(call: ServiceCall) -> dict:

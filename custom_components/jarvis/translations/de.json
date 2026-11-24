@@ -162,6 +162,10 @@
         "ziel": {
           "name": "Ziel",
           "description": "alle oder der Name einer Ansicht (z. B. hub, flur)."
+        },
+        "person": {
+          "name": "Person",
+          "description": "Meldung nur auf den Geräten dieser Personen anzeigen: ein Name (z. B. Thomas), mehrere Namen kommagetrennt oder als Liste, oder eine Gruppe (erwachsene, kinder, admins, familie). Leer heißt überall. Die Antwort sagt, wer erreicht wurde."
         }
       }
     },
