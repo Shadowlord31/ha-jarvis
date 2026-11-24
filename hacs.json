@@ -1,0 +1,6 @@
+{
+  "name": "Jarvis",
+  "content_in_root": false,
+  "homeassistant": "2024.4.1",
+  "hacs": "2.0.0"
+}

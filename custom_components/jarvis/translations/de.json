@@ -1,0 +1,217 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Jarvis",
+        "description": "Verbindet Home Assistant mit Jarvis. Die Integration verbindet sich ausgehend zu Jarvis (z. B. ws://192.168.1.10:8340/ws/ha) und zum Jarvis-Gateway-Add-on.",
+        "data": {
+          "instanz": "Instanz",
+          "jarvis_url": "Jarvis-Adresse",
+          "jarvis_token": "Jarvis-Token",
+          "gateway_url": "Gateway-Adresse",
+          "gateway_token": "Gateway-Token"
+        },
+        "data_description": {
+          "jarvis_url": "ws://<NAS-IP>:8340/ws/ha (wss:// ist erlaubt)",
+          "jarvis_token": "Token aus ha_integration.token in der config.json von Jarvis",
+          "gateway_url": "Adresse des Jarvis-Gateway-Add-ons",
+          "gateway_token": "API-Token des Gateways"
+        }
+      }
+    },
+    "error": {
+      "ungueltige_adresse": "Ungültige Adresse.",
+      "jarvis_nicht_erreichbar": "Jarvis ist nicht erreichbar.",
+      "jarvis_token": "Jarvis lehnt das Token ab.",
+      "gateway_nicht_erreichbar": "Das Gateway ist nicht erreichbar.",
+      "gateway_token": "Das Gateway lehnt das Token ab."
+    },
+    "abort": {
+      "already_configured": "Diese Instanz ist schon eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Jarvis",
+        "data": {
+          "jarvis_url": "Jarvis-Adresse",
+          "jarvis_token": "Jarvis-Token",
+          "gateway_url": "Gateway-Adresse",
+          "gateway_token": "Gateway-Token"
+        }
+      }
+    },
+    "error": {
+      "ungueltige_adresse": "Ungültige Adresse.",
+      "jarvis_nicht_erreichbar": "Jarvis ist nicht erreichbar.",
+      "jarvis_token": "Jarvis lehnt das Token ab.",
+      "gateway_nicht_erreichbar": "Das Gateway ist nicht erreichbar.",
+      "gateway_token": "Das Gateway lehnt das Token ab."
+    }
+  },
+  "selector": {
+    "instanz": {
+      "options": {
+        "haupt": "Haupt",
+        "garten": "Garten"
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "verbunden": {
+        "name": "Verbunden"
+      }
+    },
+    "sensor": {
+      "aktive_timer": {
+        "name": "Aktive Timer"
+      },
+      "naechster_timer": {
+        "name": "Nächster Timer"
+      }
+    },
+    "event": {
+      "ereignisse": {
+        "name": "Ereignisse",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "timer_fertig": "Timer fertig",
+              "erinnerung_faellig": "Erinnerung fällig"
+            }
+          }
+        }
+      }
+    }
+  },
+  "services": {
+    "timer_starten": {
+      "name": "Timer starten",
+      "description": "Startet einen Timer in Jarvis.",
+      "fields": {
+        "instanz": {
+          "name": "Instanz",
+          "description": "Welche Jarvis-Verbindung (bei mehreren eingerichteten)."
+        },
+        "dauer": {
+          "name": "Dauer",
+          "description": "Wie lange der Timer läuft."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name des Timers."
+        },
+        "ueberall": {
+          "name": "Überall melden",
+          "description": "Meldung auf allen Geräten statt nur im Hub."
+        }
+      }
+    },
+    "timer_stoppen": {
+      "name": "Timer stoppen",
+      "description": "Stoppt Timer in Jarvis. Genau eins von Id, Name oder Alle angeben.",
+      "fields": {
+        "instanz": {
+          "name": "Instanz",
+          "description": "Welche Jarvis-Verbindung (bei mehreren eingerichteten)."
+        },
+        "id": {
+          "name": "Id",
+          "description": "Id des Timers."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Genauer Name des Timers."
+        },
+        "alle": {
+          "name": "Alle",
+          "description": "Alle Timer stoppen."
+        }
+      }
+    },
+    "meldung": {
+      "name": "Meldung senden",
+      "description": "Zeigt eine Meldung in Jarvis an.",
+      "fields": {
+        "instanz": {
+          "name": "Instanz",
+          "description": "Welche Jarvis-Verbindung (bei mehreren eingerichteten)."
+        },
+        "nachricht": {
+          "name": "Nachricht",
+          "description": "Text der Meldung."
+        },
+        "titel": {
+          "name": "Titel",
+          "description": "Titel der Meldung."
+        },
+        "symbol": {
+          "name": "Symbol",
+          "description": "Symbol, z. B. ein Emoji."
+        },
+        "dringend": {
+          "name": "Dringend",
+          "description": "Als dringend kennzeichnen."
+        },
+        "sprechen": {
+          "name": "Vorlesen",
+          "description": "Meldung zusätzlich sprechen."
+        },
+        "ziel": {
+          "name": "Ziel",
+          "description": "alle oder der Name einer Ansicht (z. B. hub, flur)."
+        }
+      }
+    },
+    "aufgabe_anlegen": {
+      "name": "Aufgabe anlegen",
+      "description": "Legt eine To-Do-Aufgabe in Jarvis an.",
+      "fields": {
+        "instanz": {
+          "name": "Instanz",
+          "description": "Welche Jarvis-Verbindung (bei mehreren eingerichteten)."
+        },
+        "titel": {
+          "name": "Titel",
+          "description": "Titel der Aufgabe."
+        },
+        "liste": {
+          "name": "Liste",
+          "description": "Name der Liste."
+        },
+        "faellig_datum": {
+          "name": "Fälligkeitsdatum",
+          "description": "JJJJ-MM-TT."
+        },
+        "faellig_zeit": {
+          "name": "Fälligkeitszeit",
+          "description": "HH:MM."
+        },
+        "notiz": {
+          "name": "Notiz",
+          "description": "Zusätzliche Notiz."
+        }
+      }
+    },
+    "aufgabe_erledigt": {
+      "name": "Aufgabe erledigt",
+      "description": "Hakt eine To-Do-Aufgabe in Jarvis ab.",
+      "fields": {
+        "instanz": {
+          "name": "Instanz",
+          "description": "Welche Jarvis-Verbindung (bei mehreren eingerichteten)."
+        },
+        "titel": {
+          "name": "Titel",
+          "description": "Titel der Aufgabe."
+        },
+        "liste": {
+          "name": "Liste",
+          "description": "Name der Liste."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+timer_starten:
+  fields:
+    instanz: &instanz
+      required: false
+      selector:
+        config_entry:
+          integration: jarvis
+    dauer:
+      required: true
+      example: "00:10:00"
+      selector:
+        duration:
+    name:
+      required: false
+      example: Nudeln
+      selector:
+        text:
+    ueberall:
+      required: false
+      default: true
+      selector:
+        boolean:
+timer_stoppen:
+  fields:
+    instanz: *instanz
+    id:
+      required: false
+      selector:
+        text:
+    name:
+      required: false
+      selector:
+        text:
+    alle:
+      required: false
+      selector:
+        boolean:
+meldung:
+  fields:
+    instanz: *instanz
+    nachricht:
+      required: true
+      example: Die Waschmaschine ist fertig.
+      selector:
+        text:
+          multiline: true
+    titel:
+      required: false
+      selector:
+        text:
+    symbol:
+      required: false
+      example: "🔔"
+      selector:
+        text:
+    dringend:
+      required: false
+      default: false
+      selector:
+        boolean:
+    sprechen:
+      required: false
+      default: false
+      selector:
+        boolean:
+    ziel:
+      required: false
+      default: alle
+      example: hub
+      selector:
+        text:
+aufgabe_anlegen:
+  fields:
+    instanz: *instanz
+    titel:
+      required: true
+      selector:
+        text:
+    liste:
+      required: false
+      selector:
+        text:
+    faellig_datum:
+      required: false
+      example: "2026-12-24"
+      selector:
+        text:
+    faellig_zeit:
+      required: false
+      example: "18:30"
+      selector:
+        text:
+    notiz:
+      required: false
+      selector:
+        text:
+          multiline: true
+aufgabe_erledigt:
+  fields:
+    instanz: *instanz
+    titel:
+      required: true
+      selector:
+        text:
+    liste:
+      required: false
+      selector:
+        text:

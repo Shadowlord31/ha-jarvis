@@ -1,0 +1,217 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Jarvis",
+        "description": "Connects Home Assistant to Jarvis. The integration connects outbound to Jarvis (e.g. ws://192.168.1.10:8340/ws/ha) and to the Jarvis gateway add-on.",
+        "data": {
+          "instanz": "Instance",
+          "jarvis_url": "Jarvis address",
+          "jarvis_token": "Jarvis token",
+          "gateway_url": "Gateway address",
+          "gateway_token": "Gateway token"
+        },
+        "data_description": {
+          "jarvis_url": "ws://<NAS-IP>:8340/ws/ha (wss:// is allowed)",
+          "jarvis_token": "Token from ha_integration.token in Jarvis' config.json",
+          "gateway_url": "Address of the Jarvis gateway add-on",
+          "gateway_token": "API token of the gateway"
+        }
+      }
+    },
+    "error": {
+      "ungueltige_adresse": "Invalid address.",
+      "jarvis_nicht_erreichbar": "Jarvis is not reachable.",
+      "jarvis_token": "Jarvis rejects the token.",
+      "gateway_nicht_erreichbar": "The gateway is not reachable.",
+      "gateway_token": "The gateway rejects the token."
+    },
+    "abort": {
+      "already_configured": "This instance is already set up."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Jarvis",
+        "data": {
+          "jarvis_url": "Jarvis address",
+          "jarvis_token": "Jarvis token",
+          "gateway_url": "Gateway address",
+          "gateway_token": "Gateway token"
+        }
+      }
+    },
+    "error": {
+      "ungueltige_adresse": "Invalid address.",
+      "jarvis_nicht_erreichbar": "Jarvis is not reachable.",
+      "jarvis_token": "Jarvis rejects the token.",
+      "gateway_nicht_erreichbar": "The gateway is not reachable.",
+      "gateway_token": "The gateway rejects the token."
+    }
+  },
+  "selector": {
+    "instanz": {
+      "options": {
+        "haupt": "Main",
+        "garten": "Garden"
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "verbunden": {
+        "name": "Connected"
+      }
+    },
+    "sensor": {
+      "aktive_timer": {
+        "name": "Active timers"
+      },
+      "naechster_timer": {
+        "name": "Next timer"
+      }
+    },
+    "event": {
+      "ereignisse": {
+        "name": "Events",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "timer_fertig": "Timer finished",
+              "erinnerung_faellig": "Reminder due"
+            }
+          }
+        }
+      }
+    }
+  },
+  "services": {
+    "timer_starten": {
+      "name": "Start timer",
+      "description": "Starts a timer in Jarvis.",
+      "fields": {
+        "instanz": {
+          "name": "Instance",
+          "description": "Which Jarvis connection (if several are set up)."
+        },
+        "dauer": {
+          "name": "Duration",
+          "description": "How long the timer runs."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name of the timer."
+        },
+        "ueberall": {
+          "name": "Announce everywhere",
+          "description": "Announce on all devices instead of the hub only."
+        }
+      }
+    },
+    "timer_stoppen": {
+      "name": "Stop timer",
+      "description": "Stops timers in Jarvis. Give exactly one of id, name or all.",
+      "fields": {
+        "instanz": {
+          "name": "Instance",
+          "description": "Which Jarvis connection (if several are set up)."
+        },
+        "id": {
+          "name": "Id",
+          "description": "Id of the timer."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Exact name of the timer."
+        },
+        "alle": {
+          "name": "All",
+          "description": "Stop all timers."
+        }
+      }
+    },
+    "meldung": {
+      "name": "Send notice",
+      "description": "Shows a notice in Jarvis.",
+      "fields": {
+        "instanz": {
+          "name": "Instance",
+          "description": "Which Jarvis connection (if several are set up)."
+        },
+        "nachricht": {
+          "name": "Message",
+          "description": "Text of the notice."
+        },
+        "titel": {
+          "name": "Title",
+          "description": "Title of the notice."
+        },
+        "symbol": {
+          "name": "Icon",
+          "description": "Icon, e.g. an emoji."
+        },
+        "dringend": {
+          "name": "Urgent",
+          "description": "Mark as urgent."
+        },
+        "sprechen": {
+          "name": "Speak",
+          "description": "Also read the notice aloud."
+        },
+        "ziel": {
+          "name": "Target",
+          "description": "all or the name of a view (e.g. hub, flur)."
+        }
+      }
+    },
+    "aufgabe_anlegen": {
+      "name": "Create task",
+      "description": "Creates a to-do task in Jarvis.",
+      "fields": {
+        "instanz": {
+          "name": "Instance",
+          "description": "Which Jarvis connection (if several are set up)."
+        },
+        "titel": {
+          "name": "Title",
+          "description": "Title of the task."
+        },
+        "liste": {
+          "name": "List",
+          "description": "Name of the list."
+        },
+        "faellig_datum": {
+          "name": "Due date",
+          "description": "YYYY-MM-DD."
+        },
+        "faellig_zeit": {
+          "name": "Due time",
+          "description": "HH:MM."
+        },
+        "notiz": {
+          "name": "Note",
+          "description": "Additional note."
+        }
+      }
+    },
+    "aufgabe_erledigt": {
+      "name": "Complete task",
+      "description": "Checks off a to-do task in Jarvis.",
+      "fields": {
+        "instanz": {
+          "name": "Instance",
+          "description": "Which Jarvis connection (if several are set up)."
+        },
+        "titel": {
+          "name": "Title",
+          "description": "Title of the task."
+        },
+        "liste": {
+          "name": "List",
+          "description": "Name of the list."
+        }
+      }
+    }
+  }
+}
