@@ -19,7 +19,7 @@ Jarvis (NAS, Docker)  <-- WebSocket (outbound from HA) -->  Integration "jarvis"
 - Verbindet sich **ausgehend** per WebSocket mit Jarvis (`ws://<NAS-IP>:8340/ws/ha`) – kein offener Port in Home Assistant nötig.
 - Reicht Anfragen von Jarvis an das **Jarvis-Gateway-Add-on** durch (nur eine feste Positivliste von Pfaden).
 - Meldet Zustandsänderungen der im Gateway freigegebenen Entitäten an Jarvis.
-- Stellt Dienste, Sensoren und ein Ereignis für Timer, Meldungen und Aufgaben bereit.
+- Stellt Dienste, Sensoren, ein Ereignis und vier Kalender für Timer, Meldungen und Aufgaben bereit.
 
 ### Installation (HACS)
 
@@ -61,6 +61,15 @@ Antwort: `erreicht` (Zahl der Verbindungen), `personen` (erreichte Personen), `n
 
 `binary_sensor.jarvis_verbunden`, `sensor.jarvis_aktive_timer`, `sensor.jarvis_naechster_timer`, `event.jarvis_ereignisse` (`timer_fertig`, `erinnerung_faellig`). Ist Jarvis nicht erreichbar, sind die Sensoren *nicht verfügbar* und die Dienste melden „Jarvis ist nicht erreichbar“. Es wird nichts zwischengespeichert.
 
+### Kalender (ab 0.3.0, nur Anzeige)
+
+Vier Kalender-Entitäten zeigen, was in Jarvis ansteht: `calendar.jarvis_haupt_termine`, `calendar.jarvis_haupt_geburtstage`, `calendar.jarvis_haupt_aufgaben`, `calendar.jarvis_haupt_dienst` (der Teil nach `jarvis_` ist der Instanzname; in einer englischen HA-Oberfläche heißen sie *Appointments*, *Birthdays*, *Tasks*, *Duty*). Anlegen, Ändern und Abhaken bleibt in Jarvis.
+
+- Abruf von gestern bis in 14 Tage, alle 5 Minuten, nach jedem Wiederverbinden und sofort, wenn sich in Jarvis etwas ändert (Meldung `kalender_geaendert`).
+- Die Entität zeigt den laufenden oder nächsten Eintrag; die Kalenderansicht holt ihren Zeitraum direkt bei Jarvis (höchstens 100 Tage).
+- *Nicht verfügbar* ist ein Kalender, wenn die Verbindung steht, Jarvis den Befehl nicht kennt (älterer Stand) oder das Modul dahinter in Jarvis nicht aktiv ist (z. B. `dienstplan` für „Dienst“). Das steht einmal im Log; alles andere läuft weiter.
+- Nach dem Update in HACS Home Assistant **neu starten**.
+
 ### Sicherheit
 
 Siehe [SECURITY.md](SECURITY.md). Zugangsdaten stehen nur im Config Entry; die Diagnose schwärzt sie.
@@ -90,6 +99,15 @@ Siehe [SECURITY.md](SECURITY.md). Zugangsdaten stehen nur im Config Entry; die D
 ### Entities (device "Jarvis (<instance>)")
 
 `binary_sensor.jarvis_verbunden`, `sensor.jarvis_aktive_timer`, `sensor.jarvis_naechster_timer`, `event.jarvis_ereignisse`. While Jarvis is unreachable the sensors are *unavailable* and services raise "Jarvis ist nicht erreichbar". Nothing is cached.
+
+### Calendars (since 0.3.0, display only)
+
+Four calendar entities show what is coming up in Jarvis: `calendar.jarvis_haupt_appointments`, `calendar.jarvis_haupt_birthdays`, `calendar.jarvis_haupt_tasks`, `calendar.jarvis_haupt_duty` (the part after `jarvis_` is the instance name; a German HA UI names them *Termine*, *Geburtstage*, *Aufgaben*, *Dienst*). Creating, changing and completing stays in Jarvis.
+
+- Fetched from yesterday up to 14 days ahead, every 5 minutes, after every reconnect and immediately when something changes in Jarvis (message `kalender_geaendert`).
+- The entity shows the current or next entry; the calendar view asks Jarvis directly for its range (at most 100 days).
+- A calendar is *unavailable* when the connection is down, Jarvis does not know the command (older version) or the module behind it is not active in Jarvis (e.g. `dienstplan` for "Duty"). This is logged once; everything else keeps working.
+- After updating in HACS, **restart** Home Assistant.
 
 ### Security
 

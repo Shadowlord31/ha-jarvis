@@ -1,7 +1,9 @@
 """Konstanten der Jarvis-Integration."""
 
+from datetime import timedelta
+
 DOMAIN = "jarvis"
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 CONF_INSTANZ = "instanz"
 CONF_JARVIS_URL = "jarvis_url"
@@ -32,3 +34,8 @@ SERVICE_AUFGABE_ANLEGEN = "aufgabe_anlegen"
 SERVICE_AUFGABE_ERLEDIGT = "aufgabe_erledigt"
 
 NICHT_ERREICHBAR = "Jarvis ist nicht erreichbar"
+
+KALENDER_QUELLEN = ("termine", "geburtstage", "aufgaben", "dienst")
+KALENDER_INTERVALL = timedelta(minutes=5)
+KALENDER_ENTPRELLUNG = 1.0
+KALENDER_MAX_TAGE = 100

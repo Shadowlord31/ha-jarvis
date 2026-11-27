@@ -18,16 +18,18 @@ from .const import (CONF_GATEWAY_TOKEN, CONF_GATEWAY_URL, CONF_INSTANZ, CONF_JAR
                     SERVICE_AUFGABE_ANLEGEN, SERVICE_AUFGABE_ERLEDIGT, SERVICE_MELDUNG, SERVICE_TIMER_STARTEN,
                     SERVICE_TIMER_STOPPEN, NICHT_ERREICHBAR)
 from .gateway_zugang import GatewayZugang
+from .kalender import KalenderDaten
 from .zustand import ZustandsPush
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.EVENT]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.EVENT, Platform.CALENDAR]
 
 
 @dataclass
 class Laufzeit:
     client: JarvisClient
     push: ZustandsPush
+    kalender: KalenderDaten
 
 
 type JarvisConfigEntry = ConfigEntry[Laufzeit]
@@ -122,7 +124,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: JarvisConfigEntry) -> bo
     gateway = GatewayZugang(session, daten[CONF_GATEWAY_URL], daten[CONF_GATEWAY_TOKEN])
     client = JarvisClient(hass, session, daten[CONF_INSTANZ], daten[CONF_JARVIS_URL], daten[CONF_JARVIS_TOKEN], gateway)
     push = ZustandsPush(hass, client)
-    entry.runtime_data = Laufzeit(client, push)
+    kalender = KalenderDaten(hass, client)
+    entry.async_on_unload(client.bei_verbunden(lambda: hass.async_create_task(kalender.async_request_refresh())))
+    entry.async_on_unload(client.bei_kalender(lambda: hass.async_create_task(kalender.async_request_refresh())))
+    entry.runtime_data = Laufzeit(client, push, kalender)
     _services(hass)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     push.start()

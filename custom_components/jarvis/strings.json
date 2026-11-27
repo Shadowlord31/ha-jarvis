@@ -72,6 +72,20 @@
         "name": "Next timer"
       }
     },
+    "calendar": {
+      "termine": {
+        "name": "Appointments"
+      },
+      "geburtstage": {
+        "name": "Birthdays"
+      },
+      "aufgaben": {
+        "name": "Tasks"
+      },
+      "dienst": {
+        "name": "Duty"
+      }
+    },
     "event": {
       "ereignisse": {
         "name": "Events",

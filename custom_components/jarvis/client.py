@@ -57,6 +57,8 @@ class JarvisClient:
         self._bei_status: list[Callable[[], None]] = []
         self._bei_ereignis: list[Callable[[dict], None]] = []
         self._bei_abo: list[Callable[[list[str]], None]] = []
+        self._bei_verbunden: list[Callable[[], None]] = []
+        self._bei_kalender: list[Callable[[], None]] = []
         self._sende_sperre = asyncio.Lock()
 
     # ---- Abos der Entitaeten
@@ -74,6 +76,17 @@ class JarvisClient:
     def bei_abo(self, fn: Callable[[list[str]], None]) -> Callable[[], None]:
         self._bei_abo.append(fn)
         return lambda: self._bei_abo.remove(fn)
+
+    @callback
+    def bei_verbunden(self, fn: Callable[[], None]) -> Callable[[], None]:
+        """Wird nach jedem (Wieder-)Verbinden aufgerufen, sobald das Hallo gesendet ist."""
+        self._bei_verbunden.append(fn)
+        return lambda: self._bei_verbunden.remove(fn)
+
+    @callback
+    def bei_kalender(self, fn: Callable[[], None]) -> Callable[[], None]:
+        self._bei_kalender.append(fn)
+        return lambda: self._bei_kalender.remove(fn)
 
     def _status_melden(self) -> None:
         for fn in list(self._bei_status):
@@ -118,6 +131,8 @@ class JarvisClient:
                     _LOGGER.info("Jarvis (%s): verbunden", self.instanz)
                     self._status_melden()
                     await self._hallo()
+                    for fn in list(self._bei_verbunden):
+                        fn()
                     await self._empfangen(ws)
             except asyncio.CancelledError:
                 raise
@@ -151,6 +166,9 @@ class JarvisClient:
         elif typ == "ereignis":
             for fn in list(self._bei_ereignis):
                 fn(m)
+        elif typ == "kalender_geaendert":
+            for fn in list(self._bei_kalender):
+                fn()
         elif typ == "gateway":
             self._spaeter(self._gateway(m))
         elif typ == "abo":
@@ -231,3 +249,9 @@ class JarvisClient:
             raise JarvisFehler(str(f.get("code") or "error"), str(f.get("text") or "Jarvis hat den Befehl abgelehnt"))
         d = antwort.get("daten")
         return d if isinstance(d, dict) else {}
+
+    async def abrufen_kalender(self, von, bis, quellen: list[str] | None = None) -> dict:
+        felder = {"von": von.isoformat(), "bis": bis.isoformat()}
+        if quellen:
+            felder["quellen"] = quellen
+        return await self.befehl("kalender_lesen", **felder)

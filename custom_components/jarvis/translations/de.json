@@ -72,6 +72,20 @@
         "name": "Nächster Timer"
       }
     },
+    "calendar": {
+      "termine": {
+        "name": "Termine"
+      },
+      "geburtstage": {
+        "name": "Geburtstage"
+      },
+      "aufgaben": {
+        "name": "Aufgaben"
+      },
+      "dienst": {
+        "name": "Dienst"
+      }
+    },
     "event": {
       "ereignisse": {
         "name": "Ereignisse",

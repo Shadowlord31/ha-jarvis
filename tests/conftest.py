@@ -36,9 +36,23 @@ class FakeJarvis:
         self.verbindungen = 0
         self.kopfzeilen: list[dict] = []
         self.abfragen: list[dict] = []
-        self.befehl_antwort = lambda m: {"id": m["id"], "ok": True, "daten": {}}
+        self.befehl_antwort = self._standard
+        self.kalender_quellen = ["termine", "geburtstage", "aufgaben", "dienst"]
+        self.kalender_eintraege: list[dict] = []
+        self.kalender_unbekannt = False
+        self.kalender_anfragen: list[dict] = []
         self.verbunden = asyncio.Event()
         self.ende = False
+
+    def _standard(self, m: dict) -> dict:
+        if m.get("aktion") == "kalender_lesen":
+            self.kalender_anfragen.append(m)
+            if self.kalender_unbekannt:
+                return {"id": m["id"], "ok": False, "fehler": {"code": "unknown_action", "text": "Unbekannter Befehl"}}
+            wunsch = m.get("quellen") or self.kalender_quellen
+            eintraege = [e for e in self.kalender_eintraege if e["quelle"] in wunsch and e["quelle"] in self.kalender_quellen]
+            return {"id": m["id"], "ok": True, "daten": {"quellen": self.kalender_quellen, "eintraege": eintraege, "gekuerzt": False}}
+        return {"id": m["id"], "ok": True, "daten": {}}
 
     async def handler(self, request: web.Request):
         self.kopfzeilen.append(dict(request.headers))
@@ -59,7 +73,8 @@ class FakeJarvis:
                 m = json.loads(msg.data)
                 if m.get("typ") == "befehl":
                     await ws.send_str(json.dumps(self.befehl_antwort(m)))
-                await self.empfangen.put(m)
+                if m.get("aktion") != "kalender_lesen":
+                    await self.empfangen.put(m)
         self.verbunden.clear()
         return ws
 

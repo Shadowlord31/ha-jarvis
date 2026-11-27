@@ -20,4 +20,5 @@ class JarvisEntitaet(Entity):
         self._attr_translation_key = schluessel
 
     async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
         self.async_on_remove(self.client.bei_status(self.async_write_ha_state))
